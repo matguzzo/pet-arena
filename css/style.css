@@ -12,8 +12,7 @@
 body {
     font-family: 'TikTok Sans', sans-serif;
     margin: 0;
-    /* --- THE HALO FIX #1 --- */
-    /* The body MUST be transparent to let the background layers show through. */
+    /* The body is transparent to let the background layers show through. */
     background: transparent;
     color: var(--text-color);
     line-height: 1.7;
@@ -31,8 +30,7 @@ body {
     height: 100%;
     z-index: -2; /* Deepest layer */
     pointer-events: none;
-    /* --- THE HALO FIX #2 --- */
-    /* The solid black background color is now here, ensuring it's behind everything. */
+    /* The solid black background is here, on the deepest layer. */
     background-color: var(--background-color);
 }
 .fixed-background::before { /* Blue Halo */
@@ -73,6 +71,55 @@ body {
     left: 0;
 }
 
-/* --- (The rest of the CSS is identical to previous versions) --- */
-@media (prefers-reduced-motion: reduce) { .fixed-background, .scrolling-background { display: none; } }
-h1,h2,h3,h4{font-weight:700;color:#fff}h1{font-size:3.2rem}h2{font-size:2.2rem;border-bottom:1px solid var(--border-color);padding-bottom:.75rem;margin-top:3rem}a{color:var(--tiktok-blue);text-decoration:none;transition:color .2s ease}a:hover{color:#fff}.container{max-width:900px;margin:0 auto;padding:0 20px}header{padding:20px 0;border-bottom:1px solid var(--border-color);position:sticky;top:0;z-index:100;background-color:var(--header-bg);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}nav{display:flex;justify-content:space-between;align-items:center}.nav-brand{font-weight:700;font-size:1.5rem;color:#fff}nav .nav-links{list-style:none;margin:0;padding:0;display:flex;gap:30px}nav .nav-links a{color:var(--
+/* --- ACCESSIBILITY OVERRIDE --- */
+@media (prefers-reduced-motion: reduce) {
+    .fixed-background, .scrolling-background { display: none; }
+}
+
+/* --- LAYOUT & TYPOGRAPHY --- */
+h1, h2, h3, h4 { font-weight: 700; color: #ffffff; }
+h1 { font-size: 3.2rem; }
+h2 { font-size: 2.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-top: 3rem; }
+a { color: var(--tiktok-blue); text-decoration: none; transition: color 0.2s ease; }
+a:hover { color: #ffffff; }
+.container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+/* --- HEADER --- */
+header { padding: 20px 0; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; background-color: var(--header-bg); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+nav { display: flex; justify-content: space-between; align-items: center; }
+.nav-brand { font-weight: 700; font-size: 1.5rem; color: #ffffff; }
+nav .nav-links { list-style: none; margin: 0; padding: 0; display: flex; gap: 30px; }
+nav .nav-links a { color: var(--text-color); font-size: 1.1rem; padding-bottom: 5px; border-bottom: 2px solid transparent; transition: all 0.2s ease; }
+nav .nav-links a.active, nav .nav-links a:hover { color: #ffffff; border-bottom-color: var(--tiktok-blue); }
+
+/* --- BUTTONS --- */
+.button-primary { display: inline-block; background-color: var(--tiktok-blue); color: #010101; padding: 15px 30px; border-radius: 8px; font-weight: 700; font-size: 1.1rem; transition: all 0.2s ease; }
+.button-primary:hover { background-color: var(--tiktok-red); color: #ffffff; transform: scale(1.05); }
+
+/* --- RESPONSIVE & MISC --- */
+.hamburger { display: none; flex-direction: column; justify-content: space-around; width: 2rem; height: 2rem; background: transparent; border: none; cursor: pointer; padding: 0; z-index: 10; }
+.hamburger .bar { width: 2rem; height: 0.25rem; background-color: var(--text-color); border-radius: 10px; transition: all 0.3s linear; position: relative; transform-origin: 1px; }
+main { padding: 40px 0; }
+.hero { text-align: center; padding: 80px 0; }
+.hero .subtitle { font-size: 1.25rem; color: #a0a0a0; max-width: 700px; margin: 1rem auto 2rem auto; }
+
+/* --- FOOTER --- */
+footer { border-top: 1px solid var(--border-color); padding: 40px 0; margin-top: 40px; color: #888; text-align: center; }
+footer .footer-logo {
+    height: 80px; /* <-- THIS IS THE CHANGED VALUE */
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+.footer-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; }
+.footer-links a { color: #aaa; font-weight: bold; }
+.footer-links a:hover { color: var(--tiktok-blue); }
+footer p { font-size: 0.9rem; margin: 0; }
+
+@media (max-width: 768px) {
+    h1 { font-size: 2.5rem; }
+    h2 { font-size: 1.8rem; }
+    .nav-links { position: fixed; right: -100%; top: 0; height: 100vh; width: 70%; background-color: #1c1c1c; flex-direction: column; align-items: center; justify-content: center; gap: 40px; transition: right 0.4s ease-in-out; z-index: 5; }
+    .nav-links.active { right: 0; }
+    .hamburger { display: flex; }
+}
+
