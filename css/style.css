@@ -1,57 +1,84 @@
 /* Basic Reset & Font Setup */
+:root {
+    --background-color: #0d0d0d;
+    --text-color: #e9e9e9;
+    --primary-accent: #4a90e2; /* A nice, soft blue */
+    --border-color: #2a2a2a;
+    --header-bg: rgba(13, 13, 13, 0.85);
+}
+
 body {
     font-family: 'TikTok Sans', sans-serif;
     margin: 0;
-    background-color: #ffffff;
-    color: #121212;
-    line-height: 1.6;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.7;
     font-size: 18px;
+    position: relative;
+    overflow-x: hidden;
 }
+
+/* Blue Halo Effect */
+body::before {
+    content: '';
+    position: absolute;
+    top: -500px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1000px;
+    height: 1000px;
+    background: radial-gradient(circle, rgba(29, 78, 216, 0.15) 0%, rgba(13, 13, 13, 0) 60%);
+    z-index: 0;
+    pointer-events: none;
+}
+
 
 /* Typography */
 h1, h2, h3, h4 {
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.3;
     margin-bottom: 1rem;
+    color: #ffffff;
 }
 
-h1 {
-    font-size: 3.5rem;
-    color: #000000;
-}
-
+h1 { font-size: 3.2rem; }
 h2 {
-    font-size: 2.5rem;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 0.5rem;
+    font-size: 2.2rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
     margin-top: 3rem;
 }
+h3 { font-size: 1.5rem; margin-top: 2.5rem; }
+h4 { font-size: 1.2rem; }
 
-p {
-    margin-bottom: 1rem;
-}
+p { margin-bottom: 1.2rem; }
 
 a {
-    color: #0052ff; /* A stylish blue for links */
+    color: var(--primary-accent);
     text-decoration: none;
     transition: color 0.2s ease;
 }
-
-a:hover {
-    color: #003ecc;
-}
+a:hover { color: #ffffff; }
 
 /* Layout */
 .container {
     max-width: 900px;
     margin: 0 auto;
     padding: 0 20px;
+    position: relative;
+    z-index: 2;
 }
 
-/* Header & Navigation */
+/* Header & Sticky Navigation */
 header {
     padding: 20px 0;
-    border-bottom: 1px solid #eeeeee;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--header-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 nav {
@@ -63,133 +90,148 @@ nav {
 .nav-brand {
     font-weight: 700;
     font-size: 1.5rem;
-    color: #121212;
+    color: #ffffff;
 }
+.nav-brand:hover { color: #ffffff; }
 
-nav ul {
+nav .nav-links {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
-    gap: 25px;
+    gap: 30px;
 }
 
-nav a {
-    color: #555555;
+nav .nav-links a {
+    color: var(--text-color);
     font-size: 1.1rem;
     padding-bottom: 5px;
     border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
 }
 
-nav a.active, nav a:hover {
-    color: #121212;
-    border-bottom-color: #121212;
+nav .nav-links a.active, nav .nav-links a:hover {
+    color: #ffffff;
+    border-bottom-color: var(--primary-accent);
+}
+
+/* Hamburger Menu for Mobile */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 2rem;
+    height: 2rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+}
+
+.hamburger .bar {
+    width: 2rem;
+    height: 0.25rem;
+    background-color: var(--text-color);
+    border-radius: 10px;
+    transition: all 0.3s linear;
+    position: relative;
+    transform-origin: 1px;
 }
 
 /* Main Content Sections */
-main {
-    padding: 40px 0;
-}
-
-.hero {
-    text-align: center;
-    padding: 60px 0;
-}
-
+main { padding: 40px 0; }
+.hero { text-align: center; padding: 80px 0; }
 .hero .subtitle {
     font-size: 1.25rem;
-    color: #555;
-    max-width: 600px;
+    color: #a0a0a0;
+    max-width: 700px;
     margin: 1rem auto 2rem auto;
 }
-
-.content-section {
-    padding: 30px 0;
-}
+.content-section { padding: 30px 0; }
 
 /* Buttons */
 .button-primary {
     display: inline-block;
-    background-color: #000000;
+    background-color: var(--primary-accent);
     color: #ffffff;
     padding: 15px 30px;
     border-radius: 8px;
     font-weight: 700;
     font-size: 1.1rem;
-    transition: background-color 0.2s ease;
-}
-
-.button-primary:hover {
-    background-color: #333333;
-    color: #ffffff;
-}
-
-.button-secondary {
-    display: inline-block;
-    background-color: transparent;
-    color: #121212;
-    padding: 13px 28px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 1.1rem;
     transition: all 0.2s ease;
 }
-
-.button-secondary:hover {
-    border-color: #121212;
-    background-color: #f8f8f8;
+.button-primary:hover {
+    background-color: #ffffff;
+    color: #000000;
 }
 
 /* Lists */
-ul, ol {
-    padding-left: 20px;
-}
-
-.prize-list {
-    list-style: none;
-    padding: 0;
-}
-.prize-list li {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-}
-
-/* FAQ Section */
-.faq-section {
-    border-top: 1px solid #eee;
-    margin-top: 2rem;
-}
-.faq-item {
-    margin-bottom: 1.5rem;
-}
-.faq-item h4 {
-    margin-bottom: 0.5rem;
-}
-.faq-item p {
-    margin: 0;
-    color: #555;
-}
+ul, ol { padding-left: 25px; }
+li { margin-bottom: 0.8rem; }
+.prize-list { list-style: none; padding: 0; }
+.prize-list li { font-size: 1.2rem; margin-bottom: 0.5rem; }
 
 /* Footer */
 footer {
-    border-top: 1px solid #eeeeee;
-    padding: 30px 0;
+    border-top: 1px solid var(--border-color);
+    padding: 40px 0;
     margin-top: 40px;
-    color: #777;
+    color: #888;
+    text-align: center;
 }
 
-footer .container {
+footer .footer-logo {
+    height: 40px;
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+.footer-links {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 20px;
 }
 
-.social-links a {
-    margin-left: 20px;
-    color: #777;
+.footer-links a {
+    color: #aaa;
+    font-weight: bold;
 }
-.social-links a:hover {
-    color: #121212;
+.footer-links a:hover {
+    color: var(--primary-accent);
 }
 
+footer p {
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Responsive Design for Mobile & Tablet */
+@media (max-width: 768px) {
+    h1 { font-size: 2.5rem; }
+    h2 { font-size: 1.8rem; }
+
+    .nav-links {
+        position: fixed;
+        right: -100%; /* Start off-screen */
+        top: 0;
+        height: 100vh;
+        width: 70%;
+        background-color: #1c1c1c;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        transition: right 0.4s ease-in-out;
+        z-index: 5;
+    }
+
+    .nav-links.active {
+        right: 0; /* Slide in */
+    }
+
+    .hamburger {
+        display: flex;
+    }
+}
