@@ -1,8 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('✅ Effects script loaded.');
+
     // --- ACCESSIBILITY CHECK ---
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (motionQuery.matches) {
-        document.querySelector('.background-effects')?.remove();
+        console.log('❌ Reduced Motion is enabled. All effects disabled.');
+        document.querySelector('.fixed-background')?.remove();
+        document.querySelector('.scrolling-background')?.remove();
         return;
     }
 
@@ -11,93 +15,92 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', () => {
         body.style.setProperty('--scroll-y', window.scrollY);
     }, { passive: true });
+    console.log('✅ Halo scroll effect active.');
 
-    // --- GENTLE PARTICLE EFFECT ---
-    const canvas = document.getElementById('matrix-canvas');
-    if (!canvas) return;
+    // --- REVEAL CANVAS ENGINE ---
+    const canvas = document.getElementById('reveal-canvas');
+    if (!canvas) {
+        console.error('❌ ERROR: Canvas with ID "reveal-canvas" not found!');
+        return;
+    }
+    const ctx = canvas.getContext('2d', { willReadFrequently: true }); // Optimization for frequent reads
+    console.log('✅ Reveal canvas initialized.');
 
-    const ctx = canvas.getContext('2d');
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+    const artCanvas = document.createElement('canvas');
+    const artCtx = artCanvas.getContext('2d');
 
-    // Particle settings
-    let particles = [];
-    const chars = '01';
-    const fontSize = 14;
-    const tiktokBlue = getComputedStyle(document.documentElement).getPropertyValue('--tiktok-blue').trim();
+    const logoSVG = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxZW0iIGhlaWdodD0iMWVtIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTEzLjgzNCA1LjY3OEE1LjY3OSA1LjY3OSAwIDAgMCA4LjE1NiAwSDguMTQ3djE0LjYyNGE1LjY3OSA1LjY3OSAwIDEgMS01LjY3OS01LjY3OWg1LjY3Wm0wIDguOTQ4YTUuNjc5IDUuNjc5IDAgMSAwIDUuNjc4LTUuNjc5YTUuNjg1IDUuNjg1IDAgMCAwLTUuNjc4IDUuNjc5WiIvPjwvc3ZnPg==`;
+    const logoImg = new Image();
+    logoImg.src = logoSVG;
 
-    const mouse = {
-        x: -9999,
-        y: -9999,
-        radius: 150 // The area around the mouse where particles will spawn
-    };
-
-    window.addEventListener('mousemove', (e) => {
+    const mouse = { x: -9999, y: -9999, radius: 150 };
+    window.addEventListener('mousemove', e => {
         mouse.x = e.clientX;
-        mouse.y = e.clientY;
+        mouse.y = e.clientY + window.scrollY;
     });
 
-    // A class to define each particle
-    class Particle {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-            this.char = chars.charAt(Math.floor(Math.random() * chars.length));
-            this.life = 1; // Represents full life (100%)
-            this.fadeSpeed = Math.random() * 0.02 + 0.005; // How fast it fades
-        }
+    function drawArt() {
+        const width = artCanvas.width;
+        const height = artCanvas.height;
+        artCtx.clearRect(0, 0, width, height);
+        artCtx.fillStyle = 'rgba(255, 255, 255, 0.04)';
 
-        draw() {
-            // As life decreases, opacity decreases
-            ctx.fillStyle = `rgba(${parseInt(tiktokBlue.slice(1,3),16)}, ${parseInt(tiktokBlue.slice(3,5),16)}, ${parseInt(tiktokBlue.slice(5,7),16)}, ${this.life * 0.8})`;
-            ctx.font = `${fontSize}px monospace`;
-            ctx.fillText(this.char, this.x, this.y);
-        }
+        // Draw Logo
+        const logoSize = Math.min(width, height) * 0.8;
+        artCtx.globalAlpha = 0.03;
+        artCtx.drawImage(logoImg, (width - logoSize) / 2, height * 0.2, logoSize, logoSize);
+        artCtx.globalAlpha = 1.0;
 
-        update() {
-            this.life -= this.fadeSpeed;
-        }
-    }
-
-    function handleParticles() {
-        // Clear the canvas for the new frame
-        ctx.clearRect(0, 0, width, height);
-
-        // Add 1-2 new particles per frame near the mouse
-        for (let i = 0; i < 2; i++) {
-            // Spawn in a random spot within the mouse radius
-            const angle = Math.random() * Math.PI * 2;
-            const radius = Math.random() * mouse.radius;
-            const x = mouse.x + Math.cos(angle) * radius;
-            const y = mouse.y + Math.sin(angle) * radius;
-            particles.push(new Particle(x, y));
-        }
-
-        // Update and draw all particles
-        for (let i = particles.length - 1; i >= 0; i--) {
-            particles[i].update();
-            particles[i].draw();
-
-            // Remove particles that have faded out
-            if (particles[i].life < 0) {
-                particles.splice(i, 1);
+        // Draw Binary Grid
+        const fontSize = 12;
+        artCtx.font = `${fontSize}px monospace`;
+        for (let y = 0; y < height; y += fontSize * 2) {
+            for (let x = 0; x < width; x += fontSize * 2) {
+                artCtx.fillText(Math.random() > 0.5 ? '1' : '0', x, y);
             }
         }
+        console.log('✅ Hidden art pre-drawn.');
     }
 
-    // Animation loop using requestAnimationFrame for smoothness
     function animate() {
-        handleParticles();
+        ctx.fillStyle = 'rgba(1, 1, 1, 0.005)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(mouse.x, mouse.y, mouse.radius, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(artCanvas, 0, 0);
+        ctx.restore();
         requestAnimationFrame(animate);
     }
-    animate();
 
-    // Handle window resizing
+    function setup() {
+        const docHeight = document.documentElement.scrollHeight;
+        const docWidth = document.documentElement.clientWidth;
+        canvas.parentElement.style.height = `${docHeight}px`;
+        canvas.width = artCanvas.width = docWidth;
+        canvas.height = artCanvas.height = docHeight;
+        drawArt();
+        console.log(`✅ Canvas resized to ${docWidth}x${docHeight}`);
+    }
+
+    logoImg.onload = () => {
+        console.log('✅ Logo image loaded successfully.');
+        setup();
+        animate();
+        console.log('✅ Animation started.');
+    };
+    logoImg.onerror = () => {
+        console.error('❌ ERROR: The logo image failed to load.');
+    };
+
+    // More reliable resize handling
+    let resizeTimeout;
     window.addEventListener('resize', () => {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-        particles = []; // Clear particles on resize to avoid weird placement
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(setup, 100);
     });
 });
+
 
 
