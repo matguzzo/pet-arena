@@ -1,40 +1,37 @@
-/* --- BRAND COLORS & THEME --- *//* --- BRAND COLORS & THEME --- */
+/* --- BRAND COLORS & THEME --- */
 :root {
     --tiktok-red: #FE2C55;
     --tiktok-blue: #25F4EE;
-    --background-color: #000000;
+    --background-color: #010101;
     --text-color: #e9e9e9;
     --border-color: #2a2a2a;
-    --header-bg: rgba(1, 1, 1, 0.8);
+    --header-bg: rgba(1, 1, 1, 0.85);
     --scroll-y: 0;
 }
 
 body {
     font-family: 'TikTok Sans', sans-serif;
     margin: 0;
-    /* This is the key fix: The body itself is now transparent. */
-    background-color: transparent;
+    /* Set the background color here to prevent transparent gaps */
+    background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.7;
     font-size: 18px;
 }
 
-/* --- BACKGROUND EFFECTS CONTAINER --- */
-.background-effects {
+/* --- BACKGROUND LAYERS --- */
+
+/* Layer 1: Fixed Halos */
+.fixed-background {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden;
-    z-index: -1;
-    /* The black background is now here, allowing the halos inside it to be visible. */
-    background-color: var(--background-color);
+    z-index: -2; /* Deepest layer */
     pointer-events: none;
 }
-
-/* Blue Halo (Top) - NOW VISIBLE */
-.background-effects::before {
+.fixed-background::before { /* Blue Halo */
     content: '';
     position: absolute;
     top: -800px;
@@ -44,9 +41,7 @@ body {
     height: 1800px;
     background: radial-gradient(circle, rgba(37, 244, 238, 0.15) 0%, rgba(1, 1, 1, 0) 50%);
 }
-
-/* Red Halo (Bottom, scrolls) - NOW VISIBLE */
-.background-effects::after {
+.fixed-background::after { /* Red Halo */
     content: '';
     position: absolute;
     bottom: -900px;
@@ -58,18 +53,25 @@ body {
     transition: transform 0.1s linear;
 }
 
-/* Canvas for the new gentle effect */
-#matrix-canvas {
-    position: absolute;
+/* Layer 2: Scrolling Art Canvas */
+.scrolling-background {
+    position: absolute; /* This makes it scroll with the page */
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100%; /* Height will be set by JS */
+    z-index: -1; /* Sits on top of halos, but behind content */
+    pointer-events: none;
+}
+#reveal-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 /* --- ACCESSIBILITY OVERRIDE --- */
 @media (prefers-reduced-motion: reduce) {
-    .background-effects { display: none; }
+    .fixed-background, .scrolling-background { display: none; }
 }
 
 /* --- (The rest of the CSS is identical to the previous version) --- */
@@ -91,136 +93,6 @@ nav .nav-links a.active, nav .nav-links a:hover { color: #ffffff; border-bottom-
 .button-primary { display: inline-block; background-color: var(--tiktok-blue); color: #010101; padding: 15px 30px; border-radius: 8px; font-weight: 700; font-size: 1.1rem; transition: all 0.2s ease; }
 .button-primary:hover { background-color: var(--tiktok-red); color: #ffffff; transform: scale(1.05); }
 /* RESPONSIVE & MISC */
-.hamburger { display: none; flex-direction: column; justify-content: space-around; width: 2rem; height: 2rem; background: transparent; border: none; cursor: pointer; padding: 0; z-index: 10; }
-.hamburger .bar { width: 2rem; height: 0.25rem; background-color: var(--text-color); border-radius: 10px; transition: all 0.3s linear; position: relative; transform-origin: 1px; }
-main { padding: 40px 0; }
-.hero { text-align: center; padding: 80px 0; }
-.hero .subtitle { font-size: 1.25rem; color: #a0a0a0; max-width: 700px; margin: 1rem auto 2rem auto; }
-footer { border-top: 1px solid var(--border-color); padding: 40px 0; margin-top: 40px; color: #888; text-align: center; }
-footer .footer-logo { height: 40px; margin-bottom: 20px; opacity: 0.8; }
-.footer-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; }
-.footer-links a { color: #aaa; font-weight: bold; }
-.footer-links a:hover { color: var(--tiktok-blue); }
-footer p { font-size: 0.9rem; margin: 0; }
-@media (max-width: 768px) { h1 { font-size: 2.5rem; } h2 { font-size: 1.8rem; } .nav-links { position: fixed; right: -100%; top: 0; height: 100vh; width: 70%; background-color: #1c1c1c; flex-direction: column; align-items: center; justify-content: center; gap: 40px; transition: right 0.4s ease-in-out; z-index: 5; } .nav-links.active { right: 0; } .hamburger { display: flex; } }
-
-:root {
-    --tiktok-red: #FE2C55;
-    --tiktok-blue: #25F4EE; /* This is the vibrant teal color */
-    --background-color: #000000; /* A slightly deeper black */
-    --text-color: #e9e9e9;
-    --border-color: #2a2a2a;
-    --header-bg: rgba(1, 1, 1, 0.8);
-    --scroll-y: 0;
-}
-
-body {
-    font-family: 'TikTok Sans', sans-serif;
-    margin: 0;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    line-height: 1.7;
-    font-size: 18px;
-}
-
-/* --- NEW BACKGROUND EFFECTS CONTAINER --- */
-.background-effects {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: -1; /* This is the key: it forces this div behind ALL other content. */
-    pointer-events: none;
-}
-
-/* Blue Halo (Top) */
-.background-effects::before {
-    content: '';
-    position: absolute;
-    top: -800px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 1800px;
-    height: 1800px;
-    background: radial-gradient(circle, rgba(37, 244, 238, 0.15) 0%, rgba(1, 1, 1, 0) 50%);
-}
-
-/* Red Halo (Bottom, scrolls) */
-.background-effects::after {
-    content: '';
-    position: absolute;
-    bottom: -900px;
-    left: 50%;
-    transform: translate(-50%, calc(var(--scroll-y) * -0.6px));
-    width: 1600px;
-    height: 1600px;
-    background: radial-gradient(circle, rgba(254, 44, 85, 0.2) 0%, rgba(1, 1, 1, 0) 50%);
-    transition: transform 0.1s linear;
-}
-
-/* Matrix Canvas */
-#matrix-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-/* --- ACCESSIBILITY OVERRIDE --- */
-@media (prefers-reduced-motion: reduce) {
-    .background-effects {
-        display: none;
-    }
-}
-
-/* --- LAYOUT & TYPOGRAPHY --- */
-h1, h2, h3, h4 { font-weight: 700; color: #ffffff; }
-h1 { font-size: 3.2rem; }
-h2 { font-size: 2.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-top: 3rem; }
-
-a { color: var(--tiktok-blue); text-decoration: none; transition: color 0.2s ease; }
-a:hover { color: #ffffff; }
-
-.container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-
-/* Header (z-index is now less important but kept for good practice) */
-header {
-    padding: 20px 0;
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background-color: var(--header-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-}
-nav { display: flex; justify-content: space-between; align-items: center; }
-.nav-brand { font-weight: 700; font-size: 1.5rem; color: #ffffff; }
-nav .nav-links { list-style: none; margin: 0; padding: 0; display: flex; gap: 30px; }
-nav .nav-links a { color: var(--text-color); font-size: 1.1rem; padding-bottom: 5px; border-bottom: 2px solid transparent; transition: all 0.2s ease; }
-nav .nav-links a.active, nav .nav-links a:hover { color: #ffffff; border-bottom-color: var(--tiktok-blue); }
-
-/* Buttons */
-.button-primary {
-    display: inline-block;
-    background-color: var(--tiktok-blue);
-    color: #010101; /* Black text on bright button */
-    padding: 15px 30px;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 1.1rem;
-    transition: all 0.2s ease;
-}
-.button-primary:hover {
-    background-color: var(--tiktok-red);
-    color: #ffffff;
-    transform: scale(1.05);
-}
-
-/* --- (Rest of the CSS: Footer, Hamburger, Responsive, etc. remains the same) --- */
 .hamburger { display: none; flex-direction: column; justify-content: space-around; width: 2rem; height: 2rem; background: transparent; border: none; cursor: pointer; padding: 0; z-index: 10; }
 .hamburger .bar { width: 2rem; height: 0.25rem; background-color: var(--text-color); border-radius: 10px; transition: all 0.3s linear; position: relative; transform-origin: 1px; }
 main { padding: 40px 0; }
