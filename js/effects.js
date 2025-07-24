@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('mousemove', (e) => {
         // This creates a scattered effect, NOT a perfect halo.
         // The numbers control how far from the cursor they can appear.
-        const scatter = 40;
+        const scatter = 1000;
         const x = e.clientX + (Math.random() - 0.5) * scatter;
         const y = e.clientY + window.scrollY + (Math.random() - 0.5) * scatter;
 
