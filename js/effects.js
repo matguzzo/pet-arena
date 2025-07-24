@@ -2,8 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ACCESSIBILITY CHECK ---
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (motionQuery.matches) {
-        document.querySelector('.fixed-background')?.remove();
-        document.querySelector('.scrolling-background')?.remove();
+        document.querySelector('.background-container')?.remove();
         return;
     }
 
@@ -13,14 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
         body.style.setProperty('--scroll-y', window.scrollY);
     }, { passive: true });
 
-    // --- FINAL "IMPERCEPTIBLE GRID" ENGINE ---
+    // --- "IMPERCEPTIBLE GRID" ENGINE ---
     const canvas = document.getElementById('reveal-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
     // --- Core Settings for Subtlety ---
     const gridSize = 25;
-    const creationInterval = 1500; // DRASTICALLY SLOWED DOWN: 1.5 seconds between creations.
+    const creationInterval = 1500;
     const particleOpacity = 0.5;
     const fadeFactor = 0.015;
 
@@ -49,14 +48,16 @@ document.addEventListener('DOMContentLoaded', () => {
         lastCreationTime = currentTime;
 
         const scatter = 200;
+        // --- FIX #1: Mouse position calculation ---
+        // The canvas is now fixed, so we no longer need to add window.scrollY
         const targetX = e.clientX + (Math.random() - 0.5) * scatter;
-        const targetY = e.clientY + window.scrollY + (Math.random() - 0.5) * scatter;
+        const targetY = e.clientY + (Math.random() - 0.5) * scatter;
 
         const gridX = Math.floor(targetX / gridSize);
         const gridY = Math.floor(targetY / gridSize);
         const gridKey = `${gridX},${gridY}`;
 
-        if (!occupiedCells.has(gridKey) && particles.length < 40) { // DRASTICALLY REDUCED CAP
+        if (!occupiedCells.has(gridKey) && particles.length < 40) {
             occupiedCells.add(gridKey);
             const p = new Particle(gridX * gridSize + gridSize / 2, gridY * gridSize + gridSize / 2, gridKey);
             particles.push(p);
@@ -76,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (particles.length > 0) {
-            if (Math.random() < 0.01) { // Slow, random cleanup
+            if (Math.random() < 0.01) {
                 const removedParticle = particles.shift();
                 if (removedParticle) {
                     occupiedCells.delete(removedParticle.gridKey);
@@ -87,12 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(animate);
     }
 
+    // --- FIX #2: Simplified setup function for a fixed canvas ---
     function setup() {
-        const docHeight = document.documentElement.scrollHeight;
-        const docWidth = document.documentElement.clientWidth;
-        canvas.parentElement.style.height = `${docHeight}px`;
-        canvas.width = docWidth;
-        canvas.height = docHeight;
+        // The canvas just needs to fill the viewport now.
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
         particles = [];
         occupiedCells.clear();
     }
@@ -100,10 +100,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setup();
     animate();
 
+    // The resize listener will now call the simplified setup function
     let resizeTimeout;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(setup, 100);
     });
 });
-
