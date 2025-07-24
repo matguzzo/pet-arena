@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body.style.setProperty('--scroll-y', window.scrollY);
     }, { passive: true });
 
-    // --- MATRIX CANVAS EFFECT ---
+    // --- GENTLE PARTICLE EFFECT ---
     const canvas = document.getElementById('matrix-canvas');
     if (!canvas) return;
 
@@ -20,16 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
 
+    // Particle settings
+    let particles = [];
     const chars = '01';
     const fontSize = 14;
-    const columns = Math.ceil(width / fontSize);
-    const drops = Array(columns).fill(1);
+    const tiktokBlue = getComputedStyle(document.documentElement).getPropertyValue('--tiktok-blue').trim();
 
     const mouse = {
-        x: -9999, // Start off-screen
+        x: -9999,
         y: -9999,
-        radius: 120, // The radius of the main spotlight
-        isHovering: false
+        radius: 150 // The area around the mouse where particles will spawn
     };
 
     window.addEventListener('mousemove', (e) => {
@@ -37,68 +37,67 @@ document.addEventListener('DOMContentLoaded', () => {
         mouse.y = e.clientY;
     });
 
-    const interactiveElements = document.querySelectorAll('a, button');
-    interactiveElements.forEach(elem => {
-        elem.addEventListener('mouseenter', () => mouse.isHovering = true);
-        elem.addEventListener('mouseleave', () => mouse.isHovering = false);
-    });
+    // A class to define each particle
+    class Particle {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.char = chars.charAt(Math.floor(Math.random() * chars.length));
+            this.life = 1; // Represents full life (100%)
+            this.fadeSpeed = Math.random() * 0.02 + 0.005; // How fast it fades
+        }
 
-    function draw() {
-        // A slightly more persistent trail effect
-        ctx.fillStyle = 'rgba(1, 1, 1, 0.1)';
-        ctx.fillRect(0, 0, width, height);
+        draw() {
+            // As life decreases, opacity decreases
+            ctx.fillStyle = `rgba(${parseInt(tiktokBlue.slice(1,3),16)}, ${parseInt(tiktokBlue.slice(3,5),16)}, ${parseInt(tiktokBlue.slice(5,7),16)}, ${this.life * 0.8})`;
+            ctx.font = `${fontSize}px monospace`;
+            ctx.fillText(this.char, this.x, this.y);
+        }
 
-        const spotlightRadius = mouse.isHovering ? mouse.radius * 2.0 : mouse.radius;
-        const tiktokBlue = getComputedStyle(document.documentElement).getPropertyValue('--tiktok-blue').trim();
-
-        for (let i = 0; i < drops.length; i++) {
-            const text = chars.charAt(Math.floor(Math.random() * chars.length));
-            const x = i * fontSize;
-            const y = drops[i] * fontSize;
-
-            const dx = x - mouse.x;
-            const dy = y - mouse.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            // Only draw characters that are inside the spotlight radius
-            if (distance < spotlightRadius) {
-                // Calculate opacity: full at center, fading to zero at the edge
-                const opacity = Math.max(0, 1 - (distance / spotlightRadius));
-                
-                ctx.fillStyle = `rgba(${parseInt(tiktokBlue.slice(1,3),16)}, ${parseInt(tiktokBlue.slice(3,5),16)}, ${parseInt(tiktokBlue.slice(5,7),16)}, ${opacity * 0.9})`;
-                ctx.font = `${fontSize}px monospace`;
-                ctx.fillText(text, x, y);
-            }
-
-            if (y > height && Math.random() > 0.985) {
-                drops[i] = 0;
-            }
-            drops[i]++;
+        update() {
+            this.life -= this.fadeSpeed;
         }
     }
 
+    function handleParticles() {
+        // Clear the canvas for the new frame
+        ctx.clearRect(0, 0, width, height);
+
+        // Add 1-2 new particles per frame near the mouse
+        for (let i = 0; i < 2; i++) {
+            // Spawn in a random spot within the mouse radius
+            const angle = Math.random() * Math.PI * 2;
+            const radius = Math.random() * mouse.radius;
+            const x = mouse.x + Math.cos(angle) * radius;
+            const y = mouse.y + Math.sin(angle) * radius;
+            particles.push(new Particle(x, y));
+        }
+
+        // Update and draw all particles
+        for (let i = particles.length - 1; i >= 0; i--) {
+            particles[i].update();
+            particles[i].draw();
+
+            // Remove particles that have faded out
+            if (particles[i].life < 0) {
+                particles.splice(i, 1);
+            }
+        }
+    }
+
+    // Animation loop using requestAnimationFrame for smoothness
+    function animate() {
+        handleParticles();
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Handle window resizing
     window.addEventListener('resize', () => {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
-        const newColumns = Math.ceil(width / fontSize);
-        drops.length = newColumns;
-        for(let i=0; i<newColumns; i++) {
-            if(!drops[i]) drops[i] = 1;
-        }
+        particles = []; // Clear particles on resize to avoid weird placement
     });
-
-    // Use requestAnimationFrame for smoother animations
-    let lastTime = 0;
-    const frameRate = 1000 / 20; // 20 frames per second
-
-    function animate(timestamp) {
-        if (timestamp - lastTime > frameRate) {
-            draw();
-            lastTime = timestamp;
-        }
-        requestAnimationFrame(animate);
-    }
-    
-    animate(0);
 });
+
 
