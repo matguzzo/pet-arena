@@ -1,10 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('✅ Effects script loaded.');
-
     // --- ACCESSIBILITY CHECK ---
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (motionQuery.matches) {
-        console.log('❌ Reduced Motion is enabled. All effects disabled.');
         document.querySelector('.fixed-background')?.remove();
         document.querySelector('.scrolling-background')?.remove();
         return;
@@ -15,84 +12,83 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', () => {
         body.style.setProperty('--scroll-y', window.scrollY);
     }, { passive: true });
-    console.log('✅ Halo scroll effect active.');
 
-    // --- REVEAL CANVAS ENGINE ---
+    // --- NEW "GENTLE REVEAL" ENGINE ---
     const canvas = document.getElementById('reveal-canvas');
-    if (!canvas) {
-        console.error('❌ ERROR: Canvas with ID "reveal-canvas" not found!');
-        return;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    // This array will hold all the characters currently on screen
+    let particles = [];
+    const tiktokBlue = getComputedStyle(document.documentElement).getPropertyValue('--tiktok-blue').trim();
+
+    // A simple class to manage each character's state
+    class Particle {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.char = Math.random() > 0.5 ? '1' : '0';
+            this.life = 1.0; // Starts at full life
+            // The fade speed determines the lifetime. 1 / 1200 frames is approx 20 seconds.
+            this.fadeSpeed = 1 / 1200;
+        }
+
+        draw() {
+            // As life decreases, so does opacity
+            ctx.fillStyle = `rgba(${parseInt(tiktokBlue.slice(1,3),16)}, ${parseInt(tiktokBlue.slice(3,5),16)}, ${parseInt(tiktokBlue.slice(5,7),16)}, ${this.life * 0.7})`;
+            ctx.font = `14px monospace`;
+            ctx.fillText(this.char, this.x, this.y);
+        }
+
+        update() {
+            this.life -= this.fadeSpeed;
+        }
     }
-    const ctx = canvas.getContext('2d', { willReadFrequently: true }); // Optimization for frequent reads
-    console.log('✅ Reveal canvas initialized.');
 
-    const artCanvas = document.createElement('canvas');
-    const artCtx = artCanvas.getContext('2d');
+    // --- The Core Logic: Create particles on mouse move ---
+    window.addEventListener('mousemove', (e) => {
+        // This creates a scattered effect, NOT a perfect halo.
+        // The numbers control how far from the cursor they can appear.
+        const scatter = 40;
+        const x = e.clientX + (Math.random() - 0.5) * scatter;
+        const y = e.clientY + window.scrollY + (Math.random() - 0.5) * scatter;
 
-    const logoSVG = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxZW0iIGhlaWdodD0iMWVtIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTEzLjgzNCA1LjY3OEE1LjY3OSA1LjY3OSAwIDAgMCA4LjE1NiAwSDguMTQ3djE0LjYyNGE1LjY3OSA1LjY3OSAwIDEgMS01LjY3OS01LjY3OWg1LjY3Wm0wIDguOTQ4YTUuNjc5IDUuNjc5IDAgMSAwIDUuNjc4LTUuNjc5YTUuNjg1IDUuNjg1IDAgMCAwLTUuNjc4IDUuNjc5WiIvPjwvc3ZnPg==`;
-    const logoImg = new Image();
-    logoImg.src = logoSVG;
-
-    const mouse = { x: -9999, y: -9999, radius: 150 };
-    window.addEventListener('mousemove', e => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY + window.scrollY;
+        // Add one new particle to our array
+        particles.push(new Particle(x, y));
     });
 
-    function drawArt() {
-        const width = artCanvas.width;
-        const height = artCanvas.height;
-        artCtx.clearRect(0, 0, width, height);
-        artCtx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+    // --- The Animation Loop ---
+    // Its only job is to draw the particles and make them fade.
+    function animate() {
+        // Clear the canvas for the next frame
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw Logo
-        const logoSize = Math.min(width, height) * 0.8;
-        artCtx.globalAlpha = 0.03;
-        artCtx.drawImage(logoImg, (width - logoSize) / 2, height * 0.2, logoSize, logoSize);
-        artCtx.globalAlpha = 1.0;
+        // Loop through all particles backwards (safe for removal)
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            p.update();
+            p.draw();
 
-        // Draw Binary Grid
-        const fontSize = 12;
-        artCtx.font = `${fontSize}px monospace`;
-        for (let y = 0; y < height; y += fontSize * 2) {
-            for (let x = 0; x < width; x += fontSize * 2) {
-                artCtx.fillText(Math.random() > 0.5 ? '1' : '0', x, y);
+            // If a particle has faded completely, remove it from the array
+            if (p.life <= 0) {
+                particles.splice(i, 1);
             }
         }
-        console.log('✅ Hidden art pre-drawn.');
-    }
 
-    function animate() {
-        ctx.fillStyle = 'rgba(1, 1, 1, 0.005)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(mouse.x, mouse.y, mouse.radius, 0, Math.PI * 2);
-        ctx.clip();
-        ctx.drawImage(artCanvas, 0, 0);
-        ctx.restore();
         requestAnimationFrame(animate);
     }
 
+    // --- Setup and Resize Logic ---
     function setup() {
         const docHeight = document.documentElement.scrollHeight;
         const docWidth = document.documentElement.clientWidth;
         canvas.parentElement.style.height = `${docHeight}px`;
-        canvas.width = artCanvas.width = docWidth;
-        canvas.height = artCanvas.height = docHeight;
-        drawArt();
-        console.log(`✅ Canvas resized to ${docWidth}x${docHeight}`);
+        canvas.width = docWidth;
+        canvas.height = docHeight;
     }
 
-    logoImg.onload = () => {
-        console.log('✅ Logo image loaded successfully.');
-        setup();
-        animate();
-        console.log('✅ Animation started.');
-    };
-    logoImg.onerror = () => {
-        console.error('❌ ERROR: The logo image failed to load.');
-    };
+    setup();
+    animate();
 
     // More reliable resize handling
     let resizeTimeout;
@@ -101,6 +97,3 @@ document.addEventListener('DOMContentLoaded', () => {
         resizeTimeout = setTimeout(setup, 100);
     });
 });
-
-
-
