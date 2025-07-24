@@ -17,11 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    // --- Core Settings for Subtlety ---
+    // --- Core Settings ---
     const gridSize = 25;
     const creationInterval = 1500;
     const particleOpacity = 0.5;
-    const fadeFactor = 0.015;
 
     let particles = [];
     const occupiedCells = new Set();
@@ -31,12 +30,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let lastCreationTime = 0;
 
+    // The Particle class now includes its own life span
     class Particle {
         constructor(x, y, gridKey) {
             this.x = x;
             this.y = y;
             this.gridKey = gridKey;
             this.char = Math.random() > 0.5 ? '1' : '0';
+            this.life = 1.0; // Starts at full life
+            this.fadeSpeed = 0.005; // How quickly it fades
         }
     }
 
@@ -48,8 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
         lastCreationTime = currentTime;
 
         const scatter = 200;
-        // --- FIX #1: Mouse position calculation ---
-        // The canvas is now fixed, so we no longer need to add window.scrollY
         const targetX = e.clientX + (Math.random() - 0.5) * scatter;
         const targetY = e.clientY + (Math.random() - 0.5) * scatter;
 
@@ -64,33 +64,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- THE CORRECTED ANIMATION LOOP ---
     function animate() {
-        ctx.fillStyle = `rgba(1, 1, 1, ${fadeFactor})`;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // 1. CLEAR THE CANVAS: This makes the canvas transparent, letting the halos show through.
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = `rgba(${tiktokBlueRGB}, ${particleOpacity})`;
+        // 2. UPDATE AND DRAW PARTICLES
         ctx.font = `14px monospace`;
         ctx.textAlign = 'center';
 
-        for (const p of particles) {
-            ctx.fillText(p.char, p.x, p.y);
-        }
+        // Loop backwards for safe removal of items from the array
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            p.life -= p.fadeSpeed; // Decrease the particle's life
 
-        if (particles.length > 0) {
-            if (Math.random() < 0.01) {
-                const removedParticle = particles.shift();
-                if (removedParticle) {
-                    occupiedCells.delete(removedParticle.gridKey);
-                }
+            // If the particle has faded out, remove it
+            if (p.life <= 0) {
+                occupiedCells.delete(p.gridKey); // Free up the grid cell
+                particles.splice(i, 1);
+            } else {
+                // Set the color with the particle's current life/opacity
+                ctx.fillStyle = `rgba(${tiktokBlueRGB}, ${p.life * particleOpacity})`;
+                ctx.fillText(p.char, p.x, p.y);
             }
         }
 
         requestAnimationFrame(animate);
     }
 
-    // --- FIX #2: Simplified setup function for a fixed canvas ---
     function setup() {
-        // The canvas just needs to fill the viewport now.
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         particles = [];
@@ -100,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setup();
     animate();
 
-    // The resize listener will now call the simplified setup function
     let resizeTimeout;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
