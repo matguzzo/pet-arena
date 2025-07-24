@@ -17,10 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    // --- Core Settings ---
+    // --- UPDATED CORE SETTINGS FOR A MORE "PRESENT" EFFECT ---
     const gridSize = 25;
-    const creationInterval = 1500;
-    const particleOpacity = 0.5;
+    const creationInterval = 500;   // UPDATED: Was 1500. Creates particles more often.
+    const particleOpacity = 0.7;    // UPDATED: Was 0.5. Makes particles brighter.
+    const particleFadeSpeed = 0.003;// UPDATED: Was 0.005. Particles last longer.
+    const maxParticles = 80;        // UPDATED: Was 40. Allows more particles on screen.
 
     let particles = [];
     const occupiedCells = new Set();
@@ -38,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
             this.gridKey = gridKey;
             this.char = Math.random() > 0.5 ? '1' : '0';
             this.life = 1.0; // Starts at full life
-            this.fadeSpeed = 0.005; // How quickly it fades
         }
     }
 
@@ -57,33 +58,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const gridY = Math.floor(targetY / gridSize);
         const gridKey = `${gridX},${gridY}`;
 
-        if (!occupiedCells.has(gridKey) && particles.length < 40) {
+        if (!occupiedCells.has(gridKey) && particles.length < maxParticles) {
             occupiedCells.add(gridKey);
             const p = new Particle(gridX * gridSize + gridSize / 2, gridY * gridSize + gridSize / 2, gridKey);
             particles.push(p);
         }
     });
 
-    // --- THE CORRECTED ANIMATION LOOP ---
     function animate() {
-        // 1. CLEAR THE CANVAS: This makes the canvas transparent, letting the halos show through.
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // 2. UPDATE AND DRAW PARTICLES
         ctx.font = `14px monospace`;
         ctx.textAlign = 'center';
 
-        // Loop backwards for safe removal of items from the array
         for (let i = particles.length - 1; i >= 0; i--) {
             const p = particles[i];
-            p.life -= p.fadeSpeed; // Decrease the particle's life
+            p.life -= particleFadeSpeed; // Decrease the particle's life
 
-            // If the particle has faded out, remove it
             if (p.life <= 0) {
-                occupiedCells.delete(p.gridKey); // Free up the grid cell
+                occupiedCells.delete(p.gridKey);
                 particles.splice(i, 1);
             } else {
-                // Set the color with the particle's current life/opacity
                 ctx.fillStyle = `rgba(${tiktokBlueRGB}, ${p.life * particleOpacity})`;
                 ctx.fillText(p.char, p.x, p.y);
             }
@@ -108,3 +102,4 @@ document.addEventListener('DOMContentLoaded', () => {
         resizeTimeout = setTimeout(setup, 100);
     });
 });
+
