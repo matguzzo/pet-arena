@@ -108,7 +108,7 @@ main { padding: 40px 0; }
 /* --- FOOTER --- */
 footer { border-top: 1px solid var(--border-color); padding: 40px 0; margin-top: 40px; color: #888; text-align: center; }
 footer .footer-logo {
-    height: 40px; /* <-- THIS IS THE CORRECTED, SMALLER SIZE */
+    height: 60px; /* <-- THIS IS THE NEW "JUST RIGHT" SIZE */
     margin-bottom: 20px;
     opacity: 0.8;
 }
