@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rules & Regulations - Privacy Attack CTF</title>
+    <title>Rules & Regulations - TikTok PET ARENA</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=TikTok+Sans:wght@400;700&display=swap" rel="stylesheet">
@@ -12,75 +12,131 @@
 <body>
     <header>
         <nav class="container">
-            <a href="index.html" class="nav-brand">Privacy Attack CTF</a>
-            <ul>
+            <a href="index.html" class="nav-brand">PET ARENA</a>
+            <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="leaderboard.html">Leaderboard</a></li>
                 <li><a href="people.html">People</a></li>
                 <li><a href="rules.html" class="active">Rules & Regs</a></li>
             </ul>
+            <button class="hamburger">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </button>
         </nav>
     </header>
 
     <main>
         <section class="container hero">
-            <h1>Rules & Regulations</h1>
+            <h1>Rules and Regulations</h1>
         </section>
 
         <section class="container content-section">
-            <h2>Eligibility: Who Can Apply?</h2>
-            <p>Teams of 1–4 members from anywhere around the world. We welcome students, researchers, and industry professionals with expertise in privacy, security, ML, or data engineering.</p>
-            
-            <h2>Contest Details & Timeline</h2>
-            <p>The contest has a total duration of 50 days.</p>
+            <h2>1. Introduction & Competition Overview</h2>
+            <p>Welcome to the inaugural PET ARENA CTF COMPETITION, sponsored by TikTok Inc. This is a hands-on Capture the Flag (CTF) competition with the objective of breaking privacy-enhancing technologies (PETs) and protection mechanisms (e.g., differential privacy) with various techniques, including machine learning, in an interactive database setting.</p>
+            <p>Participants will gain access to a simulated Database System (DBS) with various static and evolving datasets through a dedicated SQL query client. Assuming the role of a malicious analyst, teams will design and execute novel or known privacy attacks across six missions organized into three tracks. The tracks and missions are of various difficulty levels and invite participants to perform database membership inference, infer sensitive attributes, reconstruct sensitive user records, link records across tables, and devise other innovative attacks in a final open mission.</p>
+            <p>A panel of distinguished cybersecurity and privacy experts will judge the innovative approach, technical soundness, and real-world impact of the submitted attacks.</p>
+            <p>This document outlines the official rules, regulations, and procedures for all participants. By submitting an application, all participants agree to be bound by these rules.</p>
+
+            <h2>2. Key Competition Dates</h2>
             <ul>
-                <li><strong>Official Kick-off:</strong> August 1st, 2025</li>
-                <li><strong>Application Deadline:</strong> September 10th, 2025</li>
-                <li><strong>Mission Completion Deadline:</strong> September 19, 2025</li>
-                <li><strong>Winners Notified by:</strong> October 25th, 2025</li>
+                <li><strong>Call for Participation Launch:</strong> July 25, 2025</li>
+                <li><strong>Competition Environment Opens (Kick-Off):</strong> August 1, 2025</li>
+                <li><strong>Final Deadline for Team Applications:</strong> September 10, 2025 (23:59 UTC)</li>
+                <li><strong>Final Deadline for Mission Submissions:</strong> September 21, 2025 (23:59 Anywhere on Earth)</li>
+                <li><strong>Notification of Winners:</strong> On or before October 25, 2025</li>
+                <li><strong>Awards Ceremony (Hybrid Event):</strong> November 15, 2025 (TBC)</li>
             </ul>
-            <p>Successful teams will be invited to a hybrid award ceremony. A limited need-basis travel budget is available upon request.</p>
 
-            <h2>Missions & Tracks</h2>
-            <p>Participants will design and execute privacy attacks through 5 missions across 3 tracks of varying difficulty. Missions include database membership detection, sensitive attribute inference, record reconstruction, record linkage, and an innovative Open Mission.</p>
-            
-            <h2>Selection Criteria</h2>
-            <p>Success is measured by a comprehensive scoring matrix. The only subjective area is the "Open Ended Exploration" mission. Scoring will consider:</p>
-            <ol>
-                <li>Type of attack and privacy compromise achieved.</li>
-                <li>Attack metrics (e.g., TPR, FPR, AUC, MSE).</li>
-                <li>Attack detectability.</li>
-                <li>Attack complexity.</li>
-                <li>Attacker's strength and prior knowledge assumed.</li>
-                <li>Attack robustness against different privacy protection mechanisms.</li>
-            </ol>
-        </section>
-        
-        <section class="container content-section faq-section">
-            <h2>Frequently Asked Questions (FAQ)</h2>
-            <div class="faq-item">
-                <h4>Can solo applicants apply?</h4>
-                <p>Yes! Individuals are welcome, but teams of 2–4 are encouraged to ensure a diversity of expertise.</p>
-            </div>
-            <div class="faq-item">
-                <h4>Are non-academic teams eligible?</h4>
-                <p>Absolutely—industry professionals and independent researchers are welcome.</p>
-            </div>
-            <div class="faq-item">
-                <h4>What datasets will we use?</h4>
-                <p>The competition will use a combination of synthetic and public real-world data.</p>
-            </div>
-        </section>
+            <h2>3. Eligibility and Team Formation</h2>
+            <h3>3.1. Team Composition</h3>
+            <p>Teams must consist of a minimum of one (1) and a maximum of four (4) members. We invite any privacy, security, machine learning, and/or data expert, researcher, and engineer to participate. We especially encourage undergraduate or graduate students in these or related fields.</p>
+            <h3>3.2. Team Lead</h3>
+            <p>Each team must designate one member as the "Team Lead." The Team Lead will be the primary point of contact for all official communications from the competition organizers.</p>
+            <h3>3.3. Global Participation</h3>
+            <p>The competition is open to participants from anywhere in the world, unless prohibited by local law or U.S. export control regulations.</p>
+            <h3>3.4. Conflicts of Interest</h3>
+            <p>Employees, contractors, and immediate family members of the organizing committee, judging panel, and sponsoring organizations are ineligible to participate for monetary prizes but may participate unofficially.</p>
 
+            <h2>4. Application and Vetting Process</h2>
+            <h3>4.1. Application Submission</h3>
+            <p>All prospective teams must submit a single application via the official application link. Applications will be reviewed on a rolling basis.</p>
+            <h3>4.2. Required Information</h3>
+            <p>The application must include: Team Name, a designated Team Lead, full names, affiliations, and roles of all team members, a valid contact email address for the Team Lead, a brief team biography outlining individual expertise, and (optional) links to code samples or prior work.</p>
+            <h3>4.3. Vetting</h3>
+            <p>The organizing committee will vet all applications to ensure compliance with eligibility requirements. The committee reserves the right to approve or deny any application at its sole discretion. Successful applicants will receive credentials to access the competition environment.</p>
+
+            <h2>5. Competition Structure and Objectives</h2>
+            <h3>5.1. Environment</h3>
+            <p>Participants will interact with the target databases exclusively through a provided SQL query interface. Direct access to the underlying infrastructure is prohibited.</p>
+            <h3>5.2. Tracks and Missions</h3>
+            <p>The competition is divided into three tracks, containing a total of six missions.</p>
+            <h3>5.3. Objective</h3>
+            <p>The primary goal is to successfully compromise the privacy of the data protected by various mechanisms. Success is measured by the criteria outlined in Section 6.</p>
+
+            <h2>6. Scoring and Judging Criteria</h2>
+            <h3>6.1. Judging Panel</h3>
+            <p>A panel of independent experts will evaluate all submissions.</p>
+            <h3>6.2. Scoring Matrix</h3>
+            <p>Success is measured by a comprehensive scoring matrix. For most missions, scoring is objective. The "Open Mission" involves subjective judgment on innovation and soundness.</p>
+            <h3>6.3. Evaluation Criteria</h3>
+            <p>Submissions will be judged based on: Type of Attack and Privacy Compromise, Attack Metrics, Attack Detectability, Attack Complexity, Attacker's Strength and Prior Knowledge, and Attack Robustness.</p>
+            <h3>6.4. Write-ups</h3>
+            <p>For each mission, teams must submit a concise write-up detailing their methodology, code, and results. For the Open Mission, a detailed report is required. The quality of the write-up will be a factor in judging.</p>
+
+            <h2>7. Prizes and Recognition</h2>
+            <h3>7.1. Monetary Awards</h3>
+            <p>Prizes will be awarded to the top five teams as follows: 1st Place: U$10,000; 2nd Place: U$5,000; 3rd Place: U$2,000; 4th Place: U$1,000; 5th Place: U$500.</p>
+            <h3>7.2. Additional Recognition</h3>
+            <p>Honorable Mentions will be awarded for exceptional creativity. Certificates of Completion will be awarded to all who successfully complete at least one mission.</p>
+            <h3>7.3. Award Ceremony</h3>
+            <p>Winners will be celebrated at the hybrid award ceremony on November 15, 2025. Unfortunately, the organizing committee can not cover costs related to travel.</p>
+            <h3>7.4. Taxes</h3>
+            <p>All prize winners are solely responsible for any and all applicable federal, state, and local taxes.</p>
+
+            <h2>8. Code of Conduct and Fair Play</h2>
+            <h3>8.1. Scope of Engagement</h3>
+            <p>All activities must be strictly confined to the provided competition environment. Attacking the competition infrastructure is strictly prohibited.</p>
+            <h3>8.2. Prohibited Actions</h3>
+            <p>Denial of Service (DoS) attacks, sharing flags or solutions, disrupting the platform, or accessing other teams' data will result in immediate disqualification.</p>
+            <h3>8.3. Professional Conduct</h3>
+            <p>All participants must communicate respectfully. Harassment or abusive language will not be tolerated.</p>
+            <h3>8.4. Final Authority</h3>
+            <p>The organizing committee has the final authority to interpret these rules and to disqualify any team for violations.</p>
+
+            <h2>9. Privacy Policy and Data Handling</h2>
+            <p>By applying, you consent to the collection of personal data for vetting, administration, and prize distribution. All personal data will be treated as confidential and securely deleted within 12 months of the competition's conclusion, except for the names and affiliations of winning teams for archival purposes.</p>
+
+            <h2>10. Legal Disclaimers & General Conditions</h2>
+            <h3>10.1. Intellectual Property</h3>
+            <p>Participants retain IP rights to their novel methodologies. However, by participating, you grant the organizers a non-exclusive, royalty-free, worldwide license to use and publish your submission write-ups and results for academic and promotional purposes, with due credit.</p>
+            <h3>10.2. Right to Modify</h3>
+            <p>The organizers reserve the right to modify the rules or schedule. Changes will be communicated to all registered teams.</p>
+            <h3>10.3. Liability</h3>
+            <p>The organizers are not responsible for technical issues that may prevent participation.</p>
+
+            <h2>11. Contact Information</h2>
+            <p>For any questions, please contact the lead organizer, Mateus Guzzo, at <a href="mailto:guzzo@tiktok.com">guzzo@tiktok.com</a>.</p>
+        </section>
     </main>
 
     <footer>
         <div class="container">
-            <p><a href="https://privacyinnovation.io/" target="_blank">A TikTok Privacy Innovation Initiative</a></p>
-            <div class="social-links">
+            <a href="https://privacyinnovation.io/" target="_blank">
+                <img src="https://privacyinnovation.io/assets/images/pi-logo-dark.svg" alt="TikTok Privacy Innovation Logo" class="footer-logo">
+            </a>
+            <div class="footer-links">
                 <a href="https://github.com/tiktok-privacy-innovation" target="_blank">GitHub</a>
+                <a href="https://twitter.com/TikTokForDevs" target="_blank">Twitter</a>
+                <a href="https://bsky.app/profile/tt4d.bsky.social" target="_blank">Bluesky</a>
             </div>
+            <p>A <a href="https://privacyinnovation.io/" target="_blank">TikTok Privacy Innovation</a> initiative.</p>
+            <p>Made with love using <a href="https://github.com/tiktok/TikTokSans" target="_blank">TikTok Sans</a>. [1, 4]</p>
         </div>
     </footer>
+
+    <script src="js/main.js"></script>
 </body>
 </html>
+
