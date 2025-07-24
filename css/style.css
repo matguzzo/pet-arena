@@ -12,28 +12,27 @@
 body {
     font-family: 'TikTok Sans', sans-serif;
     margin: 0;
-    /* The body MUST be transparent to let the background layers show through. */
-    background: transparent;
+    /* Set the background color here to prevent transparent gaps during load */
+    background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.7;
     font-size: 18px;
 }
 
-/* --- BACKGROUND LAYERS --- */
-
-/* Layer 1: Fixed Halos */
-.fixed-background {
+/* --- NEW, UNIFIED BACKGROUND CONTAINER --- */
+.background-container {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -2; /* Deepest layer */
+    z-index: -1; /* Sits behind all page content */
     pointer-events: none;
-    /* The solid black background is here, on the deepest layer. */
-    background-color: var(--background-color);
+    overflow: hidden;
 }
-.fixed-background::before { /* Blue Halo */
+
+/* Blue Halo (Attached to the container) */
+.background-container::before {
     content: '';
     position: absolute;
     top: -800px;
@@ -43,7 +42,9 @@ body {
     height: 1800px;
     background: radial-gradient(circle, rgba(37, 244, 238, 0.15) 0%, rgba(1, 1, 1, 0) 50%);
 }
-.fixed-background::after { /* Red Halo */
+
+/* Red Halo (Attached to the container) */
+.background-container::after {
     content: '';
     position: absolute;
     bottom: -900px;
@@ -55,16 +56,7 @@ body {
     transition: transform 0.1s linear;
 }
 
-/* Layer 2: Scrolling Art Canvas */
-.scrolling-background {
-    position: fixed; /* Changed to fixed to prevent layout issues */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    pointer-events: none;
-}
+/* The canvas now lives inside the container */
 #reveal-canvas {
     position: absolute;
     top: 0;
@@ -75,7 +67,7 @@ body {
 
 /* --- ACCESSIBILITY OVERRIDE --- */
 @media (prefers-reduced-motion: reduce) {
-    .fixed-background, .scrolling-background { display: none; }
+    .background-container { display: none; }
 }
 
 /* --- LAYOUT & TYPOGRAPHY --- */
@@ -90,7 +82,7 @@ a:hover { color: #ffffff; }
 header { padding: 20px 0; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; background-color: var(--header-bg); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
 nav { display: flex; justify-content: space-between; align-items: center; }
 .nav-brand { font-weight: 700; font-size: 1.5rem; color: #ffffff; }
-nav .nav-links { list-style: none; margin: 0; padding: 0; display: flex; gap: 30px; }
+nav .nav-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 30px; }
 nav .nav-links a { color: var(--text-color); font-size: 1.1rem; padding-bottom: 5px; border-bottom: 2px solid transparent; transition: all 0.2s ease; }
 nav .nav-links a.active, nav .nav-links a:hover { color: #ffffff; border-bottom-color: var(--tiktok-blue); }
 
@@ -108,14 +100,15 @@ main { padding: 40px 0; }
 /* --- FOOTER --- */
 footer { border-top: 1px solid var(--border-color); padding: 40px 0; margin-top: 40px; color: #888; text-align: center; }
 footer .footer-logo {
-    height: 77px !important; /* <-- THE DEFINITIVE TEST VALUE */
+    height: 77px !important; /* Keeping the confirmed larger size */
     margin-bottom: 20px;
     opacity: 0.8;
 }
 .footer-links {
     display: flex;
     justify-content: center;
-    gap: 25px;
+    flex-wrap: wrap; /* Allows links to wrap on smaller screens */
+    gap: 15px 25px;
     margin-bottom: 20px;
 }
 .footer-links a {
@@ -128,6 +121,12 @@ footer .footer-logo {
 footer p {
     font-size: 0.9rem;
     margin: 0;
+}
+/* Style for the new byline */
+footer .byline {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 20px;
 }
 
 /* --- RESPONSIVE SECTION --- */
