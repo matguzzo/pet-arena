@@ -1,117 +1,104 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- ACCESSIBILITY CHECK ---
-    // If the user prefers reduced motion, we do nothing.
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (motionQuery.matches) {
-        console.log('Reduced motion enabled. All background effects disabled.');
+        document.querySelector('.background-effects')?.remove();
         return;
     }
 
-    // --- SCROLLING RED HALO EFFECT ---
+    // --- SCROLLING HALO EFFECT ---
     const body = document.body;
     window.addEventListener('scroll', () => {
-        // Update the --scroll-y CSS variable with the current scroll position.
-        // The CSS uses this to move the red halo.
         body.style.setProperty('--scroll-y', window.scrollY);
     }, { passive: true });
 
-
     // --- MATRIX CANVAS EFFECT ---
     const canvas = document.getElementById('matrix-canvas');
-    if (!canvas) return; // Exit if canvas isn't on the page
+    if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
-
-    // Set canvas dimensions
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
 
-    // Characters to draw
     const chars = '01';
-    const charArray = chars.split('');
-    const fontSize = 10;
-    const columns = Math.floor(width / fontSize);
+    const fontSize = 14;
+    const columns = Math.ceil(width / fontSize);
+    const drops = Array(columns).fill(1);
 
-    // Create an array for the rain drops, one for each column
-    const drops = [];
-    for (let i = 0; i < columns; i++) {
-        drops[i] = Math.floor(Math.random() * height / fontSize);
-    }
-
-    // Mouse position and hover state
     const mouse = {
-        x: width / 2,
-        y: height / 2,
-        radius: 80, // Initial radius of the spotlight
+        x: -9999, // Start off-screen
+        y: -9999,
+        radius: 120, // The radius of the main spotlight
         isHovering: false
     };
 
-    // Track mouse movement
     window.addEventListener('mousemove', (e) => {
         mouse.x = e.clientX;
         mouse.y = e.clientY;
     });
 
-    // Track when mouse enters/leaves interactive elements to brighten the spotlight
     const interactiveElements = document.querySelectorAll('a, button');
     interactiveElements.forEach(elem => {
         elem.addEventListener('mouseenter', () => mouse.isHovering = true);
         elem.addEventListener('mouseleave', () => mouse.isHovering = false);
     });
 
-    // Animation loop
     function draw() {
-        // The semi-transparent background creates the fading trail effect
-        ctx.fillStyle = 'rgba(13, 13, 13, 0.07)';
+        // A slightly more persistent trail effect
+        ctx.fillStyle = 'rgba(1, 1, 1, 0.1)';
         ctx.fillRect(0, 0, width, height);
 
-        // Loop through each column of drops
+        const spotlightRadius = mouse.isHovering ? mouse.radius * 2.0 : mouse.radius;
+        const tiktokBlue = getComputedStyle(document.documentElement).getPropertyValue('--tiktok-blue').trim();
+
         for (let i = 0; i < drops.length; i++) {
-            const text = charArray[Math.floor(Math.random() * charArray.length)];
+            const text = chars.charAt(Math.floor(Math.random() * chars.length));
             const x = i * fontSize;
             const y = drops[i] * fontSize;
 
-            // Calculate distance from the mouse
             const dx = x - mouse.x;
             const dy = y - mouse.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            // Determine spotlight radius (larger when hovering a button)
-            const spotlightRadius = mouse.isHovering ? mouse.radius * 2.5 : mouse.radius;
-
-            // Calculate opacity based on distance from mouse
-            let opacity = 1 - (distance / spotlightRadius);
-            opacity = Math.max(0, Math.min(1, opacity)); // Clamp between 0 and 1
-
-            if (opacity > 0) {
-                // Draw the character with calculated opacity
-                ctx.fillStyle = `rgba(74, 144, 226, ${opacity * 0.8})`; // Blueish text
+            // Only draw characters that are inside the spotlight radius
+            if (distance < spotlightRadius) {
+                // Calculate opacity: full at center, fading to zero at the edge
+                const opacity = Math.max(0, 1 - (distance / spotlightRadius));
+                
+                ctx.fillStyle = `rgba(${parseInt(tiktokBlue.slice(1,3),16)}, ${parseInt(tiktokBlue.slice(3,5),16)}, ${parseInt(tiktokBlue.slice(5,7),16)}, ${opacity * 0.9})`;
                 ctx.font = `${fontSize}px monospace`;
                 ctx.fillText(text, x, y);
             }
 
-            // Move the drop down and reset if it goes off-screen
-            if (y > height && Math.random() > 0.975) {
-                drops[i] = 0; // Reset to the top
+            if (y > height && Math.random() > 0.985) {
+                drops[i] = 0;
             }
             drops[i]++;
         }
     }
 
-    // Handle window resizing
     window.addEventListener('resize', () => {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
-        // Recalculate columns, but don't reset drops to avoid a jarring flash
-        const newColumns = Math.floor(width / fontSize);
+        const newColumns = Math.ceil(width / fontSize);
         drops.length = newColumns;
-        for (let i = 0; i < newColumns; i++) {
-            if (!drops[i]) {
-                drops[i] = Math.floor(Math.random() * height / fontSize);
-            }
+        for(let i=0; i<newColumns; i++) {
+            if(!drops[i]) drops[i] = 1;
         }
     });
 
-    // Start the animation
-    setInterval(draw, 50); // Adjust interval for performance vs. speed
+    // Use requestAnimationFrame for smoother animations
+    let lastTime = 0;
+    const frameRate = 1000 / 20; // 20 frames per second
+
+    function animate(timestamp) {
+        if (timestamp - lastTime > frameRate) {
+            draw();
+            lastTime = timestamp;
+        }
+        requestAnimationFrame(animate);
+    }
+    
+    animate(0);
 });
+
