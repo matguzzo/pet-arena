@@ -57,11 +57,11 @@ body {
 
 /* Layer 2: Scrolling Art Canvas */
 .scrolling-background {
-    position: absolute;
+    position: fixed; /* Changed to fixed to prevent layout issues */
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%; /* Height will be set by JS */
+    height: 100%;
     z-index: -1;
     pointer-events: none;
 }
@@ -69,6 +69,8 @@ body {
     position: absolute;
     top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 /* --- ACCESSIBILITY OVERRIDE --- */
@@ -106,11 +108,10 @@ main { padding: 40px 0; }
 /* --- FOOTER --- */
 footer { border-top: 1px solid var(--border-color); padding: 40px 0; margin-top: 40px; color: #888; text-align: center; }
 footer .footer-logo {
-    height: 80px; /* The requested larger logo size */
+    height: 40px; /* <-- THIS IS THE CORRECTED, SMALLER SIZE */
     margin-bottom: 20px;
     opacity: 0.8;
 }
-/* This is the corrected selector for the social links */
 .footer-links {
     display: flex;
     justify-content: center;
@@ -129,7 +130,7 @@ footer p {
     margin: 0;
 }
 
-/* --- RESPONSIVE SECTION (Properly formatted) --- */
+/* --- RESPONSIVE SECTION --- */
 @media (max-width: 768px) {
     h1 { font-size: 2.5rem; }
     h2 { font-size: 1.8rem; }
@@ -154,6 +155,3 @@ footer p {
         display: flex;
     }
 }
-
-
-
